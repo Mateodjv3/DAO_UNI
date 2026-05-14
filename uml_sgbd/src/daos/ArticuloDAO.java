@@ -8,6 +8,8 @@ import java.sql.Statement;
 import entidades.Articulo;
 import entidades.Doctor;
 import entidades.Doctorando;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -100,7 +102,7 @@ public class ArticuloDAO implements DAOI <Articulo>{
                 
                 String sql2 = "SELECT * FROM Colabora c "
                         + "JOIN Doctorando d ON c.Inv_ID = d.Inv_ID "
-                        + "WHERE c.Articulo_ID = ?";
+                        + "WHERE c.Articulo_ID =										 ?";
                 
                 PreparedStatement sentencia2 = conexion.prepareStatement(sql2);
                 
@@ -222,6 +224,14 @@ public class ArticuloDAO implements DAOI <Articulo>{
             System.out.println("Error al eliminar el Articulo.");
         }
 		
+	}
+
+	public void mostrarAutorYColaboradores(int articulo_Id){
+		Articulo articulo = read(articulo_Id);
+		if (articulo != null) {
+			System.out.println("Autor: " + articulo.getAutor());
+			System.out.println("Colaboradores: " + Arrays.toString(articulo.getColaboradores()));
+		}
 	}
 
 }
