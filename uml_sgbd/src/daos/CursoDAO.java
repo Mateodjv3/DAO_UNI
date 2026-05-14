@@ -67,7 +67,7 @@ public class CursoDAO implements DAOI<Curso>{
             		} catch (SQLException e) { 
             			e.printStackTrace();
             		}
-                System.out.println("Error al insertar el Articulo.");
+                System.out.println("Error al insertar el Curso.");
 			}
 		}
 	}
@@ -125,17 +125,103 @@ public class CursoDAO implements DAOI<Curso>{
 
 	@Override
 	public void update(Curso curso) {
-		// TODO Auto-generated method stub
-		
+		if (curso != null) {
+
+			Connection conexion = null;
+
+			String sql1 = "UPDATE Curso " +
+					"SET Descripcion=?, Num_Horas=?, " +
+					"Inv_ID=? WHERE Curso_ID=?";
+
+			String sql2 = "DELETE FROM Cursa " +
+					"WHERE Curso_ID=?";
+
+			String sql3 = "INSERT INTO Cursa (Inv_ID, Curso_ID) " +
+					"VALUES (?, ?)";
+
+			try {
+				conexion = Conexion.conectar();
+				conexion.setAutoCommit(false);
+
+				PreparedStatement sentencia1 = conexion.prepareStatement(sql1);
+				sentencia1.setString(1, curso.getDescripcion());
+				sentencia1.setInt(2, curso.getNumHoras());
+				sentencia1.setInt (3, curso.getDocente().getInvID());
+				sentencia1.setInt(4, curso.getCursoID());
+
+				sentencia1.executeUpdate();
+
+				PreparedStatement sentencia2 = conexion.prepareStatement(sql2);
+				sentencia2.setInt(1, curso.getCursoID());
+				sentencia2.executeUpdate();
+
+
+				if (curso.getAlumnos() != null) {
+					for (Doctorando alumno : curso.getAlumnos()) {
+
+						PreparedStatement sentencia3 = conexion.prepareStatement(sql3);
+
+						sentencia3.setInt(1, alumno.getInvID());
+						sentencia3.setInt(2, curso.getCursoID());
+						sentencia3.executeUpdate();
+					}
+				}
+
+				conexion.commit();
+				conexion.close();
+
+			} catch (SQLException ex) {
+				try {
+					conexion.rollback();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				System.out.println("Error al actualizar el Curso.");
+			}
+		}
 	}
 
 	@Override
 	public void delete(int id) {
-		// TODO Auto-generated method stub
-		
+
+		String sql1 = "DELETE FROM Cursa " +
+				"WHERE Curso_ID=?";
+		String sql2 = "DELETE FROM Curso " +
+				"WHERE Curso_ID=?";
+
+		Connection conexion = null;
+
+		try {
+			conexion = Conexion.conectar();
+			conexion.setAutoCommit(false);
+
+			PreparedStatement sentencia1 = conexion.prepareStatement(sql1);
+
+			sentencia1.setInt(1, id);
+
+			sentencia1.executeUpdate();
+
+			PreparedStatement sentencia2 = conexion.prepareStatement(sql2);
+
+			sentencia2.setInt(1, id);
+
+			sentencia2.executeUpdate();
+
+			conexion.commit();
+			conexion.close();
+		} catch (SQLException ex) {
+			try {
+				conexion.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			System.out.println("Error al eliminar el Curso.");
+		}
+
 	}
-	
-	
-	
+
+
+
+
 
 }
